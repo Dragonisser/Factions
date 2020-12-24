@@ -36,6 +36,14 @@ public class Faction {
 		factionPlayers.add(fp);
 	}
 	
+	public void removeMember(Player player) {
+		for(FactionPlayer fp : factionPlayers) {
+			if(fp.getPlayerUUID().equals(player.getUniqueId())) {
+				factionPlayers.remove(fp);
+			}
+		}
+	}
+	
 	public ArrayList<FactionPlayer> getMembers() {
 		return factionPlayers;
 	}

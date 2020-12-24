@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.prwh.factions.main.factions.CommandHelper;
+import de.prwh.factions.main.commands.CommandHelper;
 
 public class FactionsMain extends JavaPlugin {
 

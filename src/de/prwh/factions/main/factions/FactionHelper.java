@@ -34,9 +34,19 @@ public class FactionHelper {
 	
 	public void createNewFaction(String name, UUID ownerUUID) {
 		Faction faction = new Faction(name, ownerUUID);
-		if(factionArray.contains(faction)) {
-			factionArray.add(faction);
+		if (factionArray.stream().anyMatch(o -> o.getFactionOwnerUUID().equals(ownerUUID))) {
+			System.out.println("Faction with current player as owner already exist");
+		} else {
+			if(factionArray.stream().anyMatch(o -> o.getFactionName().equals(name))) {
+				System.out.println("Faction with the supplied name already exist");
+			} else {
+				factionArray.add(faction);
+			}
 		}
+	}
+	
+	public ArrayList<Faction> getFactionlist() {
+		return this.factionArray;
 	}
 	
 	public void removeOwnFaction(UUID ownerUUID) {
