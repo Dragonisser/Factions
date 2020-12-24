@@ -1,4 +1,4 @@
-package de.prwh.Factions.main;
+package de.prwh.factions.main;
 
 import java.io.File;
 import java.io.IOException;

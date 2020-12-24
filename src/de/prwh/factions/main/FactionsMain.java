@@ -1,9 +1,11 @@
-package de.prwh.Factions.main;
+package de.prwh.factions.main;
 
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.bukkit.plugin.java.JavaPlugin;
+
+import de.prwh.factions.main.factions.CommandHelper;
 
 public class FactionsMain extends JavaPlugin {
 
@@ -14,6 +16,8 @@ public class FactionsMain extends JavaPlugin {
 	
 	public void onEnable() {
 		cfg.create(this);
+		
+		getCommand("factions").setExecutor(new CommandHelper());
 	}
 	
 	public void onDisable() {
