@@ -11,7 +11,7 @@ public class Faction {
 	private String name = "";
 	private String title = "";
 	private String description = "";
-	private ArrayList<FactionPlayer> factionPlayers;
+	private ArrayList<FactionPlayer> factionPlayers = new ArrayList<FactionPlayer>();
 	private UUID factionOwnerUUID;
 	
 	public Faction(String name, UUID factionOwnerUUID) {
@@ -40,6 +40,10 @@ public class Faction {
 		for(FactionPlayer fp : factionPlayers) {
 			if(fp.getPlayerUUID().equals(player.getUniqueId())) {
 				factionPlayers.remove(fp);
+				if(getMembers().size() == 1) {
+					FactionHelper helper = FactionHelper.getInstance();
+					helper.removeFaction(this.getFactionName());
+				}
 			}
 		}
 	}
@@ -58,5 +62,21 @@ public class Faction {
 			}
 		}
 		return false;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

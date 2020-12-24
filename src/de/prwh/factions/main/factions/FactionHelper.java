@@ -6,7 +6,7 @@ import java.util.UUID;
 public class FactionHelper {
 
 	private static FactionHelper instance;
-	private ArrayList<Faction> factionArray;
+	private ArrayList<Faction> factionArray = new ArrayList<Faction>();
 
 	public static FactionHelper getInstance() {
 		if (instance == null)
@@ -16,7 +16,7 @@ public class FactionHelper {
 
 	public Faction getFactionByName(String name) {
 		for(Faction f : factionArray) {
-			if(f.getFactionName() == name) {
+			if(f.getFactionName().equals(name)) {
 				return f;
 			}
 		}
@@ -25,7 +25,7 @@ public class FactionHelper {
 	
 	public Faction getFactionByOwner(UUID uuid) {
 		for(Faction f : factionArray) {
-			if(f.getFactionOwnerUUID() == uuid) {
+			if(f.getFactionOwnerUUID().equals(uuid) ) {
 				return f;
 			}
 		}
