@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.prwh.factions.main.factions.Faction;
 import de.prwh.factions.main.factions.FactionHelper;
 
 public class CommandHelper implements CommandExecutor {
@@ -16,11 +17,6 @@ public class CommandHelper implements CommandExecutor {
 		if(sender instanceof Player) {
 			Player player = (Player)sender;
 			
-			System.out.println(sender);
-			System.out.println(cmd);
-			System.out.println(label);
-			System.out.println(args.length);
-			
 			if(args.length == 2 && args[0].equals("create")) {
 				helper.createNewFaction(args[1], player.getUniqueId());
 				return true;
@@ -30,7 +26,18 @@ public class CommandHelper implements CommandExecutor {
 				return true;
 			}
 			if(args.length == 2 && args[0].equals("info")) {
-				System.out.println(helper.getFactionByName(args[1]));
+				Faction fac = helper.getFactionByName(args[1]);
+				System.out.println(fac.getFactionName());
+				System.out.println(fac.getMembers());
+				System.out.println(fac.getFactionOwner());
+				return true;
+			}
+			if(args.length == 1 && args[0].equals("save")) {
+				System.out.println(helper.saveFactionList());
+				return true;
+			}
+			if(args.length == 1 && args[0].equals("load")) {
+				System.out.println(helper.loadFactionList());
 				return true;
 			}
 		}

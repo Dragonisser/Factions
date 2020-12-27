@@ -1,13 +1,17 @@
 package de.prwh.factions.main.factions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-public class Faction {
+import de.prwh.factions.main.factions.FactionPlayer.FactionPlayerType;
 
+public class Faction implements Serializable {
+
+	private static final long serialVersionUID = -8011089667849474144L;
 	private String name = "";
 	private String title = "";
 	private String description = "";
@@ -17,6 +21,7 @@ public class Faction {
 	public Faction(String name, UUID factionOwnerUUID) {
 		this.name = name;
 		this.factionOwnerUUID = factionOwnerUUID;
+		addMember(factionOwnerUUID, FactionPlayerType.OWNER);
 	}
 	
 	public String getFactionName() {
@@ -32,7 +37,11 @@ public class Faction {
 	}
 	
 	public void addMember(Player player) {
-		FactionPlayer fp = new FactionPlayer(player.getUniqueId());
+		addMember(player.getUniqueId(), FactionPlayerType.MEMBER);
+	}
+	
+	public void addMember(UUID uuid, FactionPlayerType playerType) {
+		FactionPlayer fp = new FactionPlayer(uuid, playerType);
 		factionPlayers.add(fp);
 	}
 	
@@ -78,5 +87,10 @@ public class Faction {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	@Override
+	public String toString() {
+		return this.getFactionName();		
 	}
 }

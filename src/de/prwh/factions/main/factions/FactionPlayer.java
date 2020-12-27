@@ -1,9 +1,14 @@
 package de.prwh.factions.main.factions;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class FactionPlayer {
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
+public class FactionPlayer implements Serializable {
+
+	private static final long serialVersionUID = 6062768722364086593L;
 	private UUID playerUUID;
 	private FactionPlayerType factionPlayerType;
 	
@@ -19,6 +24,10 @@ public class FactionPlayer {
 	
 	public UUID getPlayerUUID() {
 		return playerUUID;
+	}
+	
+	public Player getPlayer() {
+		return Bukkit.getPlayer(playerUUID);
 	}
 
 	private void setPlayerUUID(UUID playerUUID) {
@@ -57,5 +66,11 @@ public class FactionPlayer {
 			return this.playerUUID.equals(fp.getPlayerUUID());
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return this.getPlayer().getName() + " - " + this.getFactionPlayerType().name();
+		
 	}
 }
