@@ -67,6 +67,13 @@ public class FactionHelper {
 		return false;
 	}
 	
+	public void changeFactionOwner(UUID uuid, Faction faction) {
+		UUID oldOwnerUUID = faction.getFactionOwnerUUID();
+		faction.setOwner(uuid);
+		faction.changeMemberRole(uuid, FactionPlayerType.OWNER);
+		faction.changeMemberRole(oldOwnerUUID, FactionPlayerType.MEMBER);
+	}
+	
 	public boolean createNewFaction(String name, UUID ownerUUID) {
 		Faction faction = new Faction(name, ownerUUID);
 		if (factionArray.stream().anyMatch(o -> o.getFactionOwnerUUID().equals(ownerUUID))) {

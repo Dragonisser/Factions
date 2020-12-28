@@ -52,6 +52,12 @@ public class Faction implements Serializable {
 	public void removeMember(UUID playerUUID) {
 		factionPlayers.removeIf(fp -> fp.getPlayerUUID().equals(playerUUID));
 	}
+	public void changeMemberRole(UUID uuid, FactionPlayerType playerType) {
+		FactionPlayer fp = factionPlayers.stream().filter(pl -> pl.getPlayerUUID().equals(uuid)).findFirst().orElse(null);
+		if(fp != null) {
+			fp.setFactionPlayerType(playerType);
+		}
+	}
 	
 	public boolean checkIfFactionIsForRemoval() {
 		if(this.getMembers().size() == 0) {
@@ -90,6 +96,10 @@ public class Faction implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public void setOwner(UUID uuid) {
+		this.factionOwnerUUID = uuid;
 	}
 	
 	@Override

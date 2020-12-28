@@ -1,5 +1,8 @@
 package de.prwh.factions.main.commands;
 
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -59,6 +62,36 @@ public class CommandHelper implements CommandExecutor {
 						sender.sendMessage("You are in no Faction");
 						return true;
 					}
+				}
+			}
+			if(args.length == 1 && args[0].equalsIgnoreCase("disband")) {
+				if(helper.isFactionOwner(player.getUniqueId())) {
+					sender.sendMessage("Disbanding Faction");
+					helper.removeOwnedFaction(player.getUniqueId());
+				} else {
+					sender.sendMessage("You are not an owner of a Faction");
+				}
+			}
+			if(args.length == 2 && args[0].equalsIgnoreCase("changeOwner")) {
+				if(helper.isFactionOwner(player.getUniqueId())) {
+					Faction faction = helper.getFactionByOwner(player.getUniqueId());
+					UUID uuid = Bukkit.getPlayer(args[1]).getUniqueId();
+					if(uuid != null) {
+						if(uuid.equals(player.getUniqueId())) {
+							sender.sendMessage("You are already the owner of the Faction");
+							return true;
+						} else {
+							sender.sendMessage("Changing ownership of Faction");
+							helper.changeFactionOwner(uuid, faction);
+							return true;
+						}
+					} else {
+						sender.sendMessage("User not found or not member of Faction");
+						return true;
+					}
+				} else {
+					sender.sendMessage("You are not an owner of a Faction");
+					return true;
 				}
 			}
 			if(args.length == 1 && args[0].equalsIgnoreCase("list")) {
