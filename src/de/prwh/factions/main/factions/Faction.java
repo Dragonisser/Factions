@@ -46,15 +46,18 @@ public class Faction implements Serializable {
 	}
 	
 	public void removeMember(Player player) {
-		for(FactionPlayer fp : factionPlayers) {
-			if(fp.getPlayerUUID().equals(player.getUniqueId())) {
-				factionPlayers.remove(fp);
-				if(getMembers().size() == 1) {
-					FactionHelper helper = FactionHelper.getInstance();
-					helper.removeFaction(this.getFactionName());
-				}
-			}
+		removeMember(player.getUniqueId());
+	}
+	
+	public void removeMember(UUID playerUUID) {
+		factionPlayers.removeIf(fp -> fp.getPlayerUUID().equals(playerUUID));
+	}
+	
+	public boolean checkIfFactionIsForRemoval() {
+		if(this.getMembers().size() == 0) {
+			return true;
 		}
+		return false;
 	}
 	
 	public ArrayList<FactionPlayer> getMembers() {

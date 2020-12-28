@@ -10,19 +10,18 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.prwh.factions.main.FactionsMain;
+import de.prwh.factions.main.factions.FactionPlayer.FactionPlayerType;
 
 public class FactionHelper {
 
 	private static FactionHelper instance;
 	private ArrayList<Faction> factionArray = new ArrayList<Faction>();
+	private ArrayList<Faction> factionRemoval = new ArrayList<Faction>();
 	private static File file;
-	Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static FactionHelper getInstance() {
 		if (instance == null)
@@ -39,6 +38,15 @@ public class FactionHelper {
 		return null;
 	}
 	
+	public Faction getFactionByMember(UUID uuid) {
+		for(Faction f : factionArray) {
+			if(f.getMembers().stream().anyMatch(fp -> fp.getPlayerUUID().equals(uuid))) {
+				return f;
+			}
+		}
+		return null;
+	}
+	
 	public Faction getFactionByOwner(UUID uuid) {
 		for(Faction f : factionArray) {
 			if(f.getFactionOwnerUUID().equals(uuid) ) {
@@ -48,37 +56,77 @@ public class FactionHelper {
 		return null;
 	}
 	
-	public void createNewFaction(String name, UUID ownerUUID) {
+	public boolean isFactionOwner(UUID uuid) {
+		return factionArray.stream().anyMatch(owner -> owner.getFactionOwnerUUID().equals(uuid));
+	}
+	
+	public boolean isFactionMember(UUID uuid) {
+		for(Faction f : factionArray) {
+			return f.getMembers().stream().anyMatch(fp -> fp.getPlayerUUID().equals(uuid));
+		}
+		return false;
+	}
+	
+	public boolean createNewFaction(String name, UUID ownerUUID) {
 		Faction faction = new Faction(name, ownerUUID);
 		if (factionArray.stream().anyMatch(o -> o.getFactionOwnerUUID().equals(ownerUUID))) {
 			System.out.println("Faction with current player as owner already exist");
+			return false;
 		} else {
 			if(factionArray.stream().anyMatch(o -> o.getFactionName().equals(name))) {
 				System.out.println("Faction with the supplied name already exist");
+				return false;
 			} else {
 				factionArray.add(faction);
+				return true;
 			}
 		}
+	}
+	
+	public boolean joinFaction(String name, UUID playerUUID) {
+		Faction faction = getFactionByName(name);
+		if (factionArray.stream().anyMatch(o -> o.getFactionOwnerUUID().equals(playerUUID))) {
+			System.out.println("Faction with current player as owner already exist");
+			return false;
+		} else {
+			faction.addMember(playerUUID, FactionPlayerType.MEMBER);
+			return true;
+		}
+	}
+	
+	public boolean leaveFaction(UUID playerUUID) {	
+		for(Faction faction : getFactionlist()) {
+			if(faction.getMembers().removeIf(fp -> fp.getPlayerUUID().equals(playerUUID))) {
+				if (faction.checkIfFactionIsForRemoval()) {
+					factionRemoval.add(faction);
+					return true;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void cleanUpFactionList() {
+		System.out.println("Trying to remove faction");
+		for(Faction faction : factionRemoval) {
+			System.out.println(faction.getFactionName());
+			removeFaction(faction.getFactionName());
+		}
+		factionRemoval.clear();
 	}
 	
 	public ArrayList<Faction> getFactionlist() {
 		return this.factionArray;
 	}
 	
-	public void removeOwnFaction(UUID ownerUUID) {
-		for(Faction f : factionArray) {
-			if(f.getFactionOwnerUUID().equals(ownerUUID)) {
-				factionArray.remove(f);
-			}
-		}
+	public void removeOwnedFaction(UUID ownerUUID) {
+		factionArray.removeIf(f -> f.getFactionOwnerUUID().equals(ownerUUID));
 	}
 	
 	public void removeFaction(String name) {
-		for(Faction f : factionArray) {
-			if(f.getFactionName().equalsIgnoreCase(name)) {
-				factionArray.remove(f);
-			}
-		}
+		System.out.println("Removing " + name);
+		factionArray.removeIf(f -> f.getFactionName().equals(name));
 	}
 	
 	public boolean saveFactionList() {
@@ -99,18 +147,17 @@ public class FactionHelper {
 	@SuppressWarnings("unchecked")
 	public boolean loadFactionList() {
 		FactionsMain.sendToConsole("Trying to load the Factionlist");
-		if (file == null || !file.exists())
+		if (file == null || !file.exists()) {
 			try {
 				file.createNewFile();
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-
+		}
 		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
 			factionArray = (ArrayList<Faction>) ois.readObject();
-			String nominator = factionArray.size() == 1 ? " faction" : " factions";
 			FactionsMain.sendToConsole("Factionlist loaded successfully");
-			FactionsMain.sendToConsole("Loaded " + factionArray.size() + nominator);
+			FactionsMain.sendToConsole("Loaded " + factionArray.size() + (factionArray.size() == 1 ? " faction" : " factions"));
 			return true;
 		} catch (IOException | ClassNotFoundException | ClassCastException e) {
 			FactionsMain.getLoggerMain().log(Level.SEVERE, "[Factions] Could not load towerlist to file", e);
@@ -119,7 +166,6 @@ public class FactionHelper {
 	}
 	
 	public void setFilePath(String path) {
-		//TODO change to json
 		try {
 			file = new File(path + "/factionlist.dat");
 		} catch (Exception e) {

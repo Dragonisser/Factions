@@ -3,7 +3,6 @@ package de.prwh.factions.main;
 import java.io.File;
 import java.io.IOException;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -17,13 +16,13 @@ public class CreateConfig {
 	}
 
 	public void reloadConfig() {
-		FactionsMain.getPlugin(FactionsMain.class).getServer().getConsoleSender().sendMessage(ChatColor.RED + "[Factions] " + ChatColor.GREEN + "Trying to reload the config");
+		FactionsMain.sendToConsole("Trying to reload the config");
 
 		config = YamlConfiguration.loadConfiguration(config_file);
 		if (config != null) {
-			FactionsMain.getPlugin(FactionsMain.class).getServer().getConsoleSender().sendMessage(ChatColor.RED + "[Factions] " + ChatColor.GREEN + "Config reloaded successfully");
+			FactionsMain.sendToConsole("Config reloaded successfully");
 		} else {
-			FactionsMain.getPlugin(FactionsMain.class).getServer().getConsoleSender().sendMessage(ChatColor.RED + "[Factions] " + ChatColor.GREEN + "Failed to reload Config");
+			FactionsMain.sendToConsole("Failed to reload Config");
 		}
 	}
 
@@ -43,8 +42,6 @@ public class CreateConfig {
 
 		config = YamlConfiguration.loadConfiguration(config_file);
 		config.addDefault("autoSaveTime", 10);
-		config.addDefault("oreSpawnTime", 5);
-		config.addDefault("hardMode", false);
 		config.options().copyDefaults(true);
 
 		try {
