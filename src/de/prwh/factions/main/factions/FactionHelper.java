@@ -10,6 +10,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import de.prwh.factions.main.FactionsMain;
 
 public class FactionHelper {
@@ -17,6 +22,7 @@ public class FactionHelper {
 	private static FactionHelper instance;
 	private ArrayList<Faction> factionArray = new ArrayList<Faction>();
 	private static File file;
+	Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public static FactionHelper getInstance() {
 		if (instance == null)
@@ -119,5 +125,32 @@ public class FactionHelper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	//TODO Maybe use it? Probably bad performance so pointless.
+	public String toJson() {
+		
+		JsonArray factArr = new JsonArray();
+		for(Faction f : factionArray) {
+			JsonObject factionObj = new JsonObject();
+			factionObj.addProperty("name", f.getFactionName());
+			factionObj.addProperty("ownerUUID", f.getFactionOwnerUUID().toString());
+			
+			
+			JsonArray playArr = new JsonArray();
+			for(FactionPlayer fp : f.getMembers()) {
+				JsonObject playerObj = new JsonObject();	
+				
+				playerObj.addProperty("uuid", fp.getPlayerUUID().toString());
+				playerObj.addProperty("factionPlayerType", fp.getFactionPlayerType().getType());
+				
+				playArr.add(playerObj);
+			}
+			factionObj.addProperty("factionPlayers", playArr.toString());
+			
+			factArr.add(factionObj);	
+		}
+		
+		return factArr.toString();
 	}
 }

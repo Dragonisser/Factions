@@ -17,27 +17,31 @@ public class CommandHelper implements CommandExecutor {
 		if(sender instanceof Player) {
 			Player player = (Player)sender;
 			
-			if(args.length == 2 && args[0].equals("create")) {
+			if(args.length == 2 && args[0].equalsIgnoreCase("create")) {
 				helper.createNewFaction(args[1], player.getUniqueId());
 				return true;
 			}
-			if(args.length == 1 && args[0].equals("list")) {
+			if(args.length == 1 && args[0].equalsIgnoreCase("list")) {
 				System.out.println(helper.getFactionlist());
 				return true;
 			}
-			if(args.length == 2 && args[0].equals("info")) {
+			if(args.length == 2 && args[0].equalsIgnoreCase("info")) {
 				Faction fac = helper.getFactionByName(args[1]);
 				System.out.println(fac.getFactionName());
 				System.out.println(fac.getMembers());
 				System.out.println(fac.getFactionOwner());
 				return true;
 			}
-			if(args.length == 1 && args[0].equals("save")) {
+			if(args.length == 1 && args[0].equalsIgnoreCase("save")) {
 				System.out.println(helper.saveFactionList());
 				return true;
 			}
-			if(args.length == 1 && args[0].equals("load")) {
+			if(args.length == 1 && args[0].equalsIgnoreCase("load")) {
 				System.out.println(helper.loadFactionList());
+				return true;
+			}
+			if(args.length == 1 && args[0].equalsIgnoreCase("tojson")) {
+				System.out.println(helper.toJson());
 				return true;
 			}
 		}
