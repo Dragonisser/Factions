@@ -1,5 +1,6 @@
 package de.prwh.factions.main.factions;
 
+import java.util.List;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -8,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import de.prwh.factions.main.factions.FactionPlayer.FactionPlayerType;
+import de.prwh.factions.main.factions.FactionRelation.FactionRelationStatus;
+import de.prwh.factions.main.players.PlayerHelper;
 
 public class Faction implements Serializable {
 
@@ -15,13 +18,15 @@ public class Faction implements Serializable {
 	private String name = "";
 	private String title = "";
 	private String description = "";
-	private ArrayList<FactionPlayer> factionPlayers = new ArrayList<FactionPlayer>();
+	private List<UUID> factionPlayers = new ArrayList<UUID>();
+	private ArrayList<FactionRelation> factionRelations = new ArrayList<FactionRelation>();
+	private PlayerHelper playerHelper = PlayerHelper.getInstance();
 	private UUID factionOwnerUUID;
 	
 	public Faction(String name, UUID factionOwnerUUID) {
 		this.name = name;
 		this.factionOwnerUUID = factionOwnerUUID;
-		addMember(factionOwnerUUID, FactionPlayerType.OWNER);
+		addMember(factionOwnerUUID);
 	}
 	
 	public String getFactionName() {
@@ -37,12 +42,11 @@ public class Faction implements Serializable {
 	}
 	
 	public void addMember(Player player) {
-		addMember(player.getUniqueId(), FactionPlayerType.MEMBER);
+		addMember(player.getUniqueId());
 	}
 	
-	public void addMember(UUID uuid, FactionPlayerType playerType) {
-		FactionPlayer fp = new FactionPlayer(uuid, playerType);
-		factionPlayers.add(fp);
+	public void addMember(UUID uuid) {
+		factionPlayers.add(uuid);
 	}
 	
 	public void removeMember(Player player) {
@@ -50,10 +54,10 @@ public class Faction implements Serializable {
 	}
 	
 	public void removeMember(UUID playerUUID) {
-		factionPlayers.removeIf(fp -> fp.getPlayerUUID().equals(playerUUID));
+		factionPlayers.remove(playerUUID);
 	}
 	public void changeMemberRole(UUID uuid, FactionPlayerType playerType) {
-		FactionPlayer fp = factionPlayers.stream().filter(pl -> pl.getPlayerUUID().equals(uuid)).findFirst().orElse(null);
+		FactionPlayer fp = playerHelper.getFactionPlayer(uuid);
 		if(fp != null) {
 			fp.setFactionPlayerType(playerType);
 		}
@@ -66,8 +70,21 @@ public class Faction implements Serializable {
 		return false;
 	}
 	
-	public ArrayList<FactionPlayer> getMembers() {
+	public List<UUID> getMembers() {
 		return factionPlayers;
+	}
+	
+	public void changeRelationship(Faction faction, FactionRelationStatus status) {
+		FactionRelation relation = new FactionRelation(faction, status);
+		factionRelations.add(relation);
+	}
+	
+	public void removeRelation(Faction faction) {
+		factionRelations.removeIf(fr -> fr.getFaction().equals(faction));
+	}
+	
+	public ArrayList<FactionRelation> getFactionrelations() {
+		return factionRelations;
 	}
 	
 	@Override

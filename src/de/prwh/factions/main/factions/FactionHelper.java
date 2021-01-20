@@ -11,7 +11,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import de.prwh.factions.main.FactionsMain;
 import de.prwh.factions.main.factions.FactionPlayer.FactionPlayerType;
@@ -36,35 +35,6 @@ public class FactionHelper {
 			}
 		}
 		return null;
-	}
-	
-	public Faction getFactionByMember(UUID uuid) {
-		for(Faction f : factionArray) {
-			if(f.getMembers().stream().anyMatch(fp -> fp.getPlayerUUID().equals(uuid))) {
-				return f;
-			}
-		}
-		return null;
-	}
-	
-	public Faction getFactionByOwner(UUID uuid) {
-		for(Faction f : factionArray) {
-			if(f.getFactionOwnerUUID().equals(uuid) ) {
-				return f;
-			}
-		}
-		return null;
-	}
-	
-	public boolean isFactionOwner(UUID uuid) {
-		return factionArray.stream().anyMatch(owner -> owner.getFactionOwnerUUID().equals(uuid));
-	}
-	
-	public boolean isFactionMember(UUID uuid) {
-		for(Faction f : factionArray) {
-			return f.getMembers().stream().anyMatch(fp -> fp.getPlayerUUID().equals(uuid));
-		}
-		return false;
 	}
 	
 	public void changeFactionOwner(UUID uuid, Faction faction) {
@@ -96,18 +66,16 @@ public class FactionHelper {
 			System.out.println("Faction with current player as owner already exist");
 			return false;
 		} else {
-			faction.addMember(playerUUID, FactionPlayerType.MEMBER);
+			faction.addMember(playerUUID);
 			return true;
 		}
 	}
 	
 	public boolean leaveFaction(UUID playerUUID) {	
 		for(Faction faction : getFactionlist()) {
-			if(faction.getMembers().removeIf(fp -> fp.getPlayerUUID().equals(playerUUID))) {
-				if (faction.checkIfFactionIsForRemoval()) {
-					factionRemoval.add(faction);
-					return true;
-				}
+			faction.getMembers().remove(playerUUID);
+			if (faction.checkIfFactionIsForRemoval()) {
+				factionRemoval.add(faction);
 				return true;
 			}
 		}
@@ -167,7 +135,7 @@ public class FactionHelper {
 			FactionsMain.sendToConsole("Loaded " + factionArray.size() + (factionArray.size() == 1 ? " faction" : " factions"));
 			return true;
 		} catch (IOException | ClassNotFoundException | ClassCastException e) {
-			FactionsMain.getLoggerMain().log(Level.SEVERE, "[Factions] Could not load towerlist to file", e);
+			FactionsMain.getLoggerMain().log(Level.SEVERE, "[Factions] Could not load Factionlist from file", e);
 		}
 		return false;
 	}
@@ -184,25 +152,25 @@ public class FactionHelper {
 	public String toJson() {
 		
 		JsonArray factArr = new JsonArray();
-		for(Faction f : factionArray) {
-			JsonObject factionObj = new JsonObject();
-			factionObj.addProperty("name", f.getFactionName());
-			factionObj.addProperty("ownerUUID", f.getFactionOwnerUUID().toString());
-			
-			
-			JsonArray playArr = new JsonArray();
-			for(FactionPlayer fp : f.getMembers()) {
-				JsonObject playerObj = new JsonObject();	
-				
-				playerObj.addProperty("uuid", fp.getPlayerUUID().toString());
-				playerObj.addProperty("factionPlayerType", fp.getFactionPlayerType().getType());
-				
-				playArr.add(playerObj);
-			}
-			factionObj.addProperty("factionPlayers", playArr.toString());
-			
-			factArr.add(factionObj);	
-		}
+//		for(Faction f : factionArray) {
+//			JsonObject factionObj = new JsonObject();
+//			factionObj.addProperty("name", f.getFactionName());
+//			factionObj.addProperty("ownerUUID", f.getFactionOwnerUUID().toString());
+//			
+//			
+//			JsonArray playArr = new JsonArray();
+//			for(FactionPlayer fp : f.getMembers()) {
+//				JsonObject playerObj = new JsonObject();	
+//				
+//				playerObj.addProperty("uuid", fp.getPlayerUUID().toString());
+//				playerObj.addProperty("factionPlayerType", fp.getFactionPlayerType().getType());
+//				
+//				playArr.add(playerObj);
+//			}
+//			factionObj.addProperty("factionPlayers", playArr.toString());
+//			
+//			factArr.add(factionObj);	
+//		}
 		
 		return factArr.toString();
 	}

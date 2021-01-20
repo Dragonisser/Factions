@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import de.prwh.factions.main.commands.CommandHelper;
 import de.prwh.factions.main.factions.FactionHelper;
+import de.prwh.factions.main.players.PlayerHelper;
 
 public class FactionsMain extends JavaPlugin {
 
@@ -18,16 +19,24 @@ public class FactionsMain extends JavaPlugin {
 	public static final String PLUGINID = "ressourcetowers";
 	private static final Logger log = LogManager.getLogManager().getLogger(PLUGINID.toUpperCase());
 	private FactionHelper factionHelper = FactionHelper.getInstance();
+	private PlayerHelper playerHelper = PlayerHelper.getInstance();
 	
 	
 	public void onEnable() {
 		cfg.create(this);
-		factionHelper.setFilePath(getDataFolder().getAbsolutePath());
-		factionHelper.loadFactionList();
-		factionHelper.cleanUpFactionList();
+		loadData();
 		startAutoSave();
 		
-		getCommand("factions").setExecutor(new CommandHelper(this, cfg));
+		getCommand("factions").setExecutor(new CommandHelper(this));
+	}
+	
+	private void loadData() {
+		factionHelper.setFilePath(getDataFolder().getAbsolutePath());
+		playerHelper.setFilePath(getDataFolder().getAbsolutePath());
+		factionHelper.loadFactionList();
+		playerHelper.loadPlayerList();
+		factionHelper.cleanUpFactionList();
+		playerHelper.cleanUpPlayerList();
 	}
 	
 	private void startAutoSave() {
@@ -50,11 +59,12 @@ public class FactionsMain extends JavaPlugin {
 	
 	public void reloadPlugin() {
 		restartScheduler();
-		cfg.getConfig();
+		cfg.reloadConfig();
 	}
 	
 	public void onDisable() {
 		factionHelper.saveFactionList();
+		playerHelper.savePlayerList();
 	}
 	
 	public static Logger getLoggerMain() {
